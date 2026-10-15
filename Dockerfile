@@ -2,11 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install unzip, ekstrak zip 9router-master, lalu hapus zip
-RUN apk add --no-cache unzip && \
-    unzip -q 9router-master.zip && \
-    cp -r 9router-master/* . && \
-    rm -rf 9router-master 9router-master.zip
+# Install git, clone langsung dari repository resmi 9router
+RUN apk add --no-cache git && \
+    git clone https://github.com/decolua/9router.git .
 RUN npm install
 RUN npm run build
 
