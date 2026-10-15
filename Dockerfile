@@ -6,6 +6,8 @@ WORKDIR /app
 RUN apk add --no-cache git && \
     git clone https://github.com/decolua/9router.git .
 RUN npm install
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 RUN npm run build
 
 COPY config.yaml ./config.yaml
