@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Mengunduh paket aplikasi utama 9router lengkap dari repositori pusat resmi
 RUN apk add --no-cache git && \
-    git clone https://github.com . && \
+    git clone https://github.com/vensvendo/9router.git . && \
     npm install --omit=dev
 
 # Menyalin file config.yaml aman milik Anda ke dalam sistem aplikasi
