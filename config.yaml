@@ -1,0 +1,65 @@
+name: Main Config
+version: 1.0.0
+schema: v1
+models:
+  - name: Gemini 1.5 Pro (Sangat Canggih)
+    provider: gemini
+    model: gemini-1.5-pro
+    apiKey: ${GEMINI_API_KEY}
+  - name: Autodetect
+    provider: ollama
+    model: AUTODETECT
+  - name: Llava Vision
+    provider: ollama
+    model: llava:latest
+  - name: "Anthropic: Claude Sonnet 5"
+    provider: openrouter
+    model: anthropic/claude-sonnet-5
+    apiKey: ${OPENROUTER_API_KEY}
+    defaultCompletionOptions:
+      maxTokens: 128000
+    capabilities:
+      - tool_use
+  - name: deepseek-v4-flash
+    provider: deepseek
+    model: deepseek-v4-flash
+    apiKey: ${DEEPSEEK_FLASH_API_KEY}
+  - name: deepseek-v4-pro
+    provider: deepseek
+    model: deepseek-v4-pro
+    apiKey: ${DEEPSEEK_PRO_API_KEY}
+  - name: Claude Sonnet 4.6
+    provider: anthropic
+    model: claude-sonnet-4-6
+    apiKey: ${ANTHROPIC_API_KEY}
+  - name: "MONROS"
+    provider: openai
+    model: "MONROS"
+    apiKey: ${MONROS_API_KEY}
+    apiBase: "http://localhost:20128/v1"
+    roles:
+      - chat
+      - edit
+      - apply
+
+tabAutocompleteModel:
+  name: "MONROS Autocomplete"
+  provider: openai
+  model: "MONROS"
+  apiKey: ${MONROS_AUTO_API_KEY}
+  apiBase: "http://localhost:20128/v1"
+
+imageModel:
+  provider: gemini
+  model: gemini-1.5-pro
+  apiKey: ${GEMINI_IMAGE_API_KEY}
+
+systemPrompt: "Kamu adalah Hermes Agent otonom yang bertindak sebagai Pakar IoT Senior. Proyek kita adalah aplikasi billing PlayStation berbasis Electron dan Arduino Mega 2560."
+
+mcpServers:
+  - name: chrome-devtools
+    type: stdio
+    command: npx
+    args:
+      - "-y"
+      - "chrome-devtools-mcp@latest"
