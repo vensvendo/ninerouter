@@ -2,9 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache git && \
-    git clone https://github.com/vensvendo/ninerouter.git . && \
-    npm install
+COPY . .
+RUN npm install
 
 COPY config.yaml ./config.yaml
 
