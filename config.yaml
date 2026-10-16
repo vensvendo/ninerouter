@@ -54,8 +54,7 @@ imageModel:
   model: gemini-1.5-pro
   apiKey: ${GEMINI_IMAGE_API_KEY}
 
-systemPrompt: "Kamu adalah Hermes Agent otonom yang bertindak sebagai Pakar IoT Senior. Proyek kita adalah aplikasi billing PlayStation berbasis Electron dan Arduino Mega 2560."
-
+systemPrompt: " WAJIB ATURAN: Jika kamu membaca, menulis, atau memproses file kode yang panjangnya melebihi 300 baris, kamu harus langsung membaginya menjadi beberapa file baru yang lebih kecil (maksimal 300 baris per file) agar struktur file tidak menumpuk dan tetap rapi."
 mcpServers:
   - name: chrome-devtools
     type: stdio
