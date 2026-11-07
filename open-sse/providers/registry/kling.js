@@ -20,6 +20,11 @@ export default {
   authHint: "API Key (or AccessKey:SecretKey)",
   transport: null,
   models: [
+    { id: "kling-4.0", name: "Kling 4.0", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
+    { id: "kling-4.0-flash", name: "Kling 4.0 Flash", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
+    { id: "kling-3.0-turbo", name: "Kling 3.0 Turbo", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
+    { id: "kling-3.0", name: "Kling 3.0", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
+    { id: "kling-3.0-omni", name: "Kling 3.0 Omni", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
     { id: "kling-v1-6", name: "Kling 1.6 (Standard)", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
     { id: "kling-v1-5", name: "Kling 1.5 (Pro)", params: ["duration", "aspect_ratio", "mode"], kind: "video" },
     { id: "kling-v2-master", name: "Kling 2.0 Master", params: ["duration", "aspect_ratio", "mode"], kind: "video" },

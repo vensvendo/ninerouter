@@ -121,6 +121,9 @@ export default {
     if (body.negative_prompt) {
       klingBody.negative_prompt = body.negative_prompt;
     }
+    if (body.sound) {
+      klingBody.sound = body.sound;
+    }
     if (body.image || body.image_url) {
       klingBody.image = typeof body.image === "string" ? body.image : (body.image?.url || body.image_url);
     }
