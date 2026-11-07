@@ -318,7 +318,7 @@ describe("kling video adapter", () => {
     expect(init.method).toBe("POST");
     expect(init.headers.Authorization).toBe("Bearer api-key-kling-test12345");
     expect(JSON.parse(init.body)).toEqual({
-      model_name: "kling-v1",
+      model_name: "kling-v1-6",
       prompt: "a cute robot",
       duration: "5",
       aspect_ratio: "16:9",

@@ -105,12 +105,17 @@ export default {
     }
 
     // Map OpenAI/standard video params to Kling API fields
+    let modelName = body.model?.replace(/^kling\//, "") || "kling-v1-6";
+    if (modelName === "kling-v1") {
+      modelName = "kling-v1-6"; // Auto-migrate discontinued v1 to v1-6
+    }
+
     const klingBody = {
-      model_name: body.model?.replace(/^kling\//, "") || "kling-v1",
+      model_name: modelName,
       prompt: body.prompt || "",
       duration: String(body.duration || "5"),
       aspect_ratio: body.aspect_ratio || "16:9",
-      mode: body.mode || "std",
+      mode: body.mode || (modelName === "kling-v1-5" ? "pro" : "std"),
     };
 
     if (body.negative_prompt) {
