@@ -47,7 +47,7 @@ async function probeWebProvider(provider, apiKey) {
 // Probe a media provider (tts/embedding/stt/image/video) using *Config.
 // Returns true if API key is accepted; null to skip (let default handler decide).
 async function probeMediaProvider(provider, apiKey) {
-  if (provider === "kling") return null;
+  if (provider === "kling" || provider === "fal-ai") return null;
   const p = AI_PROVIDERS[provider];
   if (!p) return null;
   const MEDIA_KINDS = new Set(["tts", "embedding", "stt", "image", "video", "music", "imageToText"]);
@@ -284,6 +284,33 @@ export async function POST(request) {
               error = errData?.message || "Invalid Kling API key";
             } catch {
               error = "Invalid Kling API key";
+            }
+          }
+          break;
+        }
+
+        case "fal-ai": {
+          const res = await fetch("https://queue.fal.run/fal-ai/flux/schnell", {
+            method: "POST",
+            headers: {
+              "Authorization": `Key ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt: "ping" }),
+            signal: AbortSignal.timeout(8000),
+          });
+          if (res.status === 401) {
+            isValid = false;
+            error = "Invalid Fal.ai API key";
+          } else {
+            isValid = true;
+            if (res.status === 403) {
+              try {
+                const data = await res.json();
+                error = data?.detail || "Key valid, but balance is exhausted";
+              } catch {
+                error = "Key valid, but balance is exhausted";
+              }
             }
           }
           break;

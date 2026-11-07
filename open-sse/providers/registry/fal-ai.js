@@ -19,6 +19,7 @@ export default {
   },
   category: "apikey",
   authType: "apikey",
+  authHint: "Format: fal_sk_...",
   transport: null,
   models: [
     { id: "fal-ai/flux/schnell", name: "FLUX Schnell", params: ["n","size"], kind: "image" },
@@ -30,5 +31,5 @@ export default {
     { id: "fal-ai/stable-diffusion-v35-large", name: "SD 3.5 Large", params: ["n","size"], kind: "image" },
   ],
   serviceKinds: ["image"],
-  imageConfig: { baseUrl: "https://queue.fal.run" },
+  imageConfig: { baseUrl: "https://queue.fal.run", authHeader: "key" },
 };
