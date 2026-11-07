@@ -1,9 +1,9 @@
-// Kling AI video jobs — https://kling.ai/document-api/api/get-started/authentication?tab=ak-sk
+// Kling AI video jobs — https://kling.ai/dev/api-key & legacy https://kling.ai/document-api/api/get-started/authentication?tab=ak-sk
 import crypto from "crypto";
 
 const KLING_API_BASE = "https://api.klingai.com/v1/videos/text2video";
 
-function generateKlingJwt(accessKey, secretKey) {
+export function generateKlingJwt(accessKey, secretKey) {
   if (!accessKey || !secretKey) {
     throw new Error("Kling video requires both AccessKey and SecretKey (format: 'AccessKey:SecretKey')");
   }
@@ -25,7 +25,7 @@ function generateKlingJwt(accessKey, secretKey) {
   return `${unsignedToken}.${signature}`;
 }
 
-function resolveCredentials(credentials) {
+export function resolveCredentials(credentials) {
   const rawKey = String(credentials?.apiKey || credentials?.accessToken || "").trim();
   let accessKey = "";
   let secretKey = "";
@@ -42,23 +42,39 @@ function resolveCredentials(credentials) {
     secretKey = parts[1]?.trim();
   }
 
-  return { accessKey, secretKey };
+  return { rawKey, accessKey, secretKey };
+}
+
+export function getKlingToken(credentialsOrKey) {
+  const rawKey = typeof credentialsOrKey === "string"
+    ? credentialsOrKey.trim()
+    : String(credentialsOrKey?.apiKey || credentialsOrKey?.accessToken || "").trim();
+
+  if (!rawKey) return "";
+
+  const { accessKey, secretKey } = resolveCredentials({ apiKey: rawKey });
+  if (accessKey && secretKey) {
+    return generateKlingJwt(accessKey, secretKey);
+  }
+  return rawKey;
 }
 
 export default {
   buildRequest({ action, requestId, rawBody, contentType, credentials }) {
-    const { accessKey, secretKey } = resolveCredentials(credentials);
-    if (!accessKey || !secretKey) {
+    const { rawKey, accessKey, secretKey } = resolveCredentials(credentials);
+    if (!rawKey) {
       return {
-        error: "Kling video authentication requires 'AccessKey:SecretKey' in the API key field.",
+        error: "Kling video authentication requires an API key in the API key field.",
       };
     }
 
-    let token = "";
-    try {
-      token = generateKlingJwt(accessKey, secretKey);
-    } catch (err) {
-      return { error: `Failed to generate Kling JWT: ${err.message}` };
+    let token = rawKey;
+    if (accessKey && secretKey) {
+      try {
+        token = generateKlingJwt(accessKey, secretKey);
+      } catch (err) {
+        return { error: `Failed to generate Kling JWT: ${err.message}` };
+      }
     }
 
     const headers = {

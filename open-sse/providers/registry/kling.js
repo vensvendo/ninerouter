@@ -12,12 +12,12 @@ export default {
     textIcon: "KL",
     website: "https://kling.ai",
     notice: {
-      apiKeyUrl: "https://kling.ai/document-api/api/get-started/authentication?tab=ak-sk",
+      apiKeyUrl: "https://kling.ai/dev/api-key",
     },
   },
   category: "apikey",
   authType: "apikey",
-  authHint: "Format: AccessKey:SecretKey",
+  authHint: "API Key (or AccessKey:SecretKey)",
   transport: null,
   models: [
     { id: "kling-v1", name: "Kling 1.0 (Standard)", params: ["duration", "aspect_ratio", "mode"], kind: "video" },

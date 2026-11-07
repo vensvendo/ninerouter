@@ -294,3 +294,87 @@ describe("vertex (veo) video adapter", () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 });
+
+describe("kling video adapter", () => {
+  beforeEach(() => { global.fetch = vi.fn(); });
+  afterEach(() => { global.fetch = originalFetch; });
+
+  it("POSTs creation with modern direct API key using Bearer token", async () => {
+    global.fetch.mockResolvedValueOnce(
+      jsonResponse({ code: 0, message: "SUCCEED", data: { task_id: "kling-task-123" } })
+    );
+
+    const result = await handleVideoProxyCore({
+      provider: "kling",
+      action: "generations",
+      rawBody: JSON.stringify({ model: "kling-v1", prompt: "a cute robot" }),
+      contentType: "application/json",
+      credentials: { apiKey: "api-key-kling-test12345" },
+    });
+
+    expect(result.success).toBe(true);
+    const [url, init] = global.fetch.mock.calls[0];
+    expect(url).toBe("https://api.klingai.com/v1/videos/text2video");
+    expect(init.method).toBe("POST");
+    expect(init.headers.Authorization).toBe("Bearer api-key-kling-test12345");
+    expect(JSON.parse(init.body)).toEqual({
+      model_name: "kling-v1",
+      prompt: "a cute robot",
+      duration: "5",
+      aspect_ratio: "16:9",
+      mode: "std",
+    });
+
+    expect(await result.response.json()).toEqual({
+      request_id: "kling-task-123",
+      status: "pending",
+    });
+  });
+
+  it("POSTs creation with legacy AccessKey:SecretKey and generates JWT", async () => {
+    global.fetch.mockResolvedValueOnce(
+      jsonResponse({ code: 0, message: "SUCCEED", data: { task_id: "kling-task-456" } })
+    );
+
+    const result = await handleVideoProxyCore({
+      provider: "kling",
+      action: "generations",
+      rawBody: JSON.stringify({ model: "kling-v1", prompt: "space journey" }),
+      contentType: "application/json",
+      credentials: { apiKey: "mockAK:mockSK" },
+    });
+
+    expect(result.success).toBe(true);
+    const [, init] = global.fetch.mock.calls[0];
+    expect(init.headers.Authorization).toMatch(/^Bearer eyJ/);
+  });
+
+  it("polls GET /v1/videos/text2video/{id} and maps completed status", async () => {
+    global.fetch.mockResolvedValueOnce(
+      jsonResponse({
+        code: 0,
+        message: "SUCCEED",
+        data: {
+          task_id: "kling-task-123",
+          task_status: "succeed",
+          task_result: { videos: [{ url: "https://kling-cdn.com/v.mp4" }] },
+        },
+      })
+    );
+
+    const result = await handleVideoProxyCore({
+      provider: "kling",
+      requestId: "kling-task-123",
+      credentials: { apiKey: "api-key-kling-test12345" },
+    });
+
+    const [url, init] = global.fetch.mock.calls[0];
+    expect(url).toBe("https://api.klingai.com/v1/videos/text2video/kling-task-123");
+    expect(init.method).toBe("GET");
+    expect(await result.response.json()).toEqual({
+      request_id: "kling-task-123",
+      status: "completed",
+      video: { url: "https://kling-cdn.com/v.mp4" },
+    });
+  });
+});

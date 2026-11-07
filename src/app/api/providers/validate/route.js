@@ -7,6 +7,7 @@ import { openaiToCommandCodeRequest } from "open-sse/translator/request/openai-t
 import { resolveQoderCredentials, resolveQoderModels } from "open-sse/services/qoderModels.js";
 import { probeBedrockCredentials } from "open-sse/executors/bedrock.js";
 import { normalizeProviderId } from "@/lib/providerNormalization";
+import { getKlingToken } from "open-sse/handlers/videoProviders/kling.js";
 
 // Probe a webSearch/webFetch provider using its searchConfig/fetchConfig.
 // Returns true if API key is accepted (status !== 401 && !== 403).
@@ -46,6 +47,7 @@ async function probeWebProvider(provider, apiKey) {
 // Probe a media provider (tts/embedding/stt/image/video) using *Config.
 // Returns true if API key is accepted; null to skip (let default handler decide).
 async function probeMediaProvider(provider, apiKey) {
+  if (provider === "kling") return null;
   const p = AI_PROVIDERS[provider];
   if (!p) return null;
   const MEDIA_KINDS = new Set(["tts", "embedding", "stt", "image", "video", "music", "imageToText"]);
@@ -264,6 +266,29 @@ export async function POST(request) {
       }
 
       switch (provider) {
+        case "kling": {
+          const token = getKlingToken(apiKey);
+          if (!token) {
+            isValid = false;
+            error = "API key is required";
+            break;
+          }
+          const res = await fetch("https://api.klingai.com/v1/videos/text2video/probe", {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(8000),
+          });
+          isValid = res.status !== 401 && res.status !== 403;
+          if (!isValid) {
+            try {
+              const errData = await res.json();
+              error = errData?.message || "Invalid Kling API key";
+            } catch {
+              error = "Invalid Kling API key";
+            }
+          }
+          break;
+        }
+
         case "openai":
           const openaiRes = await fetch("https://api.openai.com/v1/models", {
             headers: { "Authorization": `Bearer ${apiKey}` },
